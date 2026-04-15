@@ -334,6 +334,8 @@ That is the foundation you need before adding:
 
 - GitHub Actions jobs that build images
 - Semgrep scans that run in pipelines
+- Gitleaks secret scanning
+- Dependabot dependency and GitHub Actions updates
 - DefectDojo or other security platforms that collect and display results
 
 ## Stage 3 Preview: GitHub Actions
@@ -346,7 +348,7 @@ Why:
 - it keeps the focus on CI concepts instead of GitLab administration
 - it still teaches the same core flow: code change -> automated checks -> image build -> later security scan
 
-The workflow file lives here:
+The main CI workflow file lives here:
 
 - `.github/workflows/ci.yml`
 
@@ -359,15 +361,28 @@ What it does:
 
 This is the GitHub equivalent of your first CI pipeline step.
 
-Add Semgrep CE with a second workflow:
+Security workflows in this repo:
 
 - `.github/workflows/semgrep.yml`
+- `.github/workflows/gitleaks.yml`
+- `.github/dependabot.yml`
 
-What it does:
+What they do:
 
-- checks out the repository
-- runs `semgrep scan --config auto`
-- scans the Python app, Dockerfile, and Kubernetes YAML with Semgrep CE rules
+- `semgrep.yml`
+  scans the Python app, Dockerfile, and Kubernetes YAML with Semgrep CE
+  uploads SARIF as an artifact
+  uploads findings to GitHub code scanning
+
+- `gitleaks.yml`
+  scans the repository for committed secrets
+  uploads SARIF as an artifact
+  uploads findings to GitHub code scanning
+  does not fail the workflow by default
+
+- `dependabot.yml`
+  checks for Python dependency updates
+  checks for GitHub Actions version updates
 
 Why keep it separate at first:
 
@@ -376,9 +391,8 @@ Why keep it separate at first:
 
 Later, you can extend it with:
 
-- Semgrep scan job
-- Gitleaks secret scan job
-- artifact upload
+- more specific Semgrep rule selection
+- dependency vulnerability scanning beyond Dependabot
 - image push to a registry
 - deployment automation
 
@@ -386,6 +400,6 @@ Later, you can extend it with:
 
 1. Run the stack in Docker Compose
 2. Run the stack in Kubernetes
-3. Add GitHub Actions with Semgrep
-4. Export scan results
-5. Send scan results to DefectDojo
+3. Review findings in GitHub code scanning
+4. Tune Semgrep rules and scanner scope
+5. Add another security layer such as IaC scanning or DefectDojo
