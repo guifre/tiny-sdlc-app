@@ -12,6 +12,7 @@ This is a deliberately small app for learning:
 - Dependency update and vulnerability scanning with Dependabot and OSV-Scanner
 - A basic repository security policy in `SECURITY.md`
 - Basic ownership rules in `.github/CODEOWNERS`
+- SBOM generation with Syft for artifact and dependency graph visibility
 
 ## What it does
 
@@ -373,6 +374,7 @@ Security workflows in this repo:
 - `.github/workflows/gitleaks.yml`
 - `.github/workflows/checkov.yml`
 - `.github/workflows/osv-scanner.yml`
+- `.github/workflows/sbom.yml`
 - `.github/dependabot.yml`
 - `.github/CODEOWNERS`
 - `SECURITY.md`
@@ -402,6 +404,11 @@ What they do:
   runs on pushes to `main`, weekly on a schedule, and on demand
   does not fail the workflow by default
 
+- `sbom.yml`
+  generates an SPDX JSON SBOM for the repository
+  uploads the SBOM as a workflow artifact
+  submits a dependency snapshot to GitHub's dependency graph
+
 - `dependabot.yml`
   checks for Python dependency updates
   checks for GitHub Actions version updates
@@ -425,6 +432,7 @@ Later, you can extend it with:
 - more specific Semgrep rule selection
 - tighter Checkov policy selection and suppressions
 - OSV-Scanner tuning for dependency scope and policy
+- SBOM attestation or signed provenance
 - image push to a registry
 - deployment automation
 
@@ -436,4 +444,5 @@ Later, you can extend it with:
 4. Tune Semgrep rules and scanner scope
 5. Tune Checkov scope for the Kubernetes manifests
 6. Review OSV-Scanner dependency findings
-7. Add another security layer such as DefectDojo or SBOM generation
+7. Review SBOM output and dependency graph data
+8. Add another security layer such as DefectDojo or SBOM attestation
