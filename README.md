@@ -9,6 +9,7 @@ This is a deliberately small app for learning:
 - Kubernetes manifests
 - CI security scans with Semgrep
 - GitHub-native security workflows for code, secrets, and Kubernetes manifests
+- Dependency update and vulnerability scanning with Dependabot and OSV-Scanner
 
 ## What it does
 
@@ -338,6 +339,7 @@ That is the foundation you need before adding:
 - Gitleaks secret scanning
 - Checkov Kubernetes manifest scanning
 - Dependabot dependency and GitHub Actions updates
+- OSV-Scanner dependency vulnerability scanning
 - DefectDojo or other security platforms that collect and display results
 
 ## Stage 3 Preview: GitHub Actions
@@ -368,6 +370,7 @@ Security workflows in this repo:
 - `.github/workflows/semgrep.yml`
 - `.github/workflows/gitleaks.yml`
 - `.github/workflows/checkov.yml`
+- `.github/workflows/osv-scanner.yml`
 - `.github/dependabot.yml`
 
 What they do:
@@ -389,6 +392,12 @@ What they do:
   uploads findings to GitHub code scanning
   does not fail the workflow by default
 
+- `osv-scanner.yml`
+  scans the repository for dependency vulnerabilities
+  uploads SARIF to GitHub code scanning
+  runs on pushes to `main`, weekly on a schedule, and on demand
+  does not fail the workflow by default
+
 - `dependabot.yml`
   checks for Python dependency updates
   checks for GitHub Actions version updates
@@ -402,7 +411,7 @@ Later, you can extend it with:
 
 - more specific Semgrep rule selection
 - tighter Checkov policy selection and suppressions
-- dependency vulnerability scanning beyond Dependabot
+- OSV-Scanner tuning for dependency scope and policy
 - image push to a registry
 - deployment automation
 
@@ -413,4 +422,5 @@ Later, you can extend it with:
 3. Review findings in GitHub code scanning
 4. Tune Semgrep rules and scanner scope
 5. Tune Checkov scope for the Kubernetes manifests
-6. Add another security layer such as dependency scanning or DefectDojo
+6. Review OSV-Scanner dependency findings
+7. Add another security layer such as DefectDojo or SBOM generation
