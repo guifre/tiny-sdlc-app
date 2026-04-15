@@ -13,6 +13,7 @@ This is a deliberately small app for learning:
 - A basic repository security policy in `SECURITY.md`
 - Basic ownership rules in `.github/CODEOWNERS`
 - SBOM generation with Syft for artifact and dependency graph visibility
+- DAST with OWASP ZAP baseline against the running app
 
 ## What it does
 
@@ -375,6 +376,7 @@ Security workflows in this repo:
 - `.github/workflows/checkov.yml`
 - `.github/workflows/osv-scanner.yml`
 - `.github/workflows/sbom.yml`
+- `.github/workflows/zap-baseline.yml`
 - `.github/dependabot.yml`
 - `.github/CODEOWNERS`
 - `SECURITY.md`
@@ -409,6 +411,11 @@ What they do:
   uploads the SBOM as a workflow artifact
   submits a dependency snapshot to GitHub's dependency graph
 
+- `zap-baseline.yml`
+  starts the app in GitHub Actions
+  runs an OWASP ZAP baseline scan against `http://127.0.0.1:5000`
+  uploads a DAST report artifact without failing the workflow by default
+
 - `dependabot.yml`
   checks for Python dependency updates
   checks for GitHub Actions version updates
@@ -433,6 +440,7 @@ Later, you can extend it with:
 - tighter Checkov policy selection and suppressions
 - OSV-Scanner tuning for dependency scope and policy
 - SBOM attestation or signed provenance
+- ZAP rules tuning or a later move to active scan for authorized targets
 - image push to a registry
 - deployment automation
 
@@ -445,4 +453,5 @@ Later, you can extend it with:
 5. Tune Checkov scope for the Kubernetes manifests
 6. Review OSV-Scanner dependency findings
 7. Review SBOM output and dependency graph data
-8. Add another security layer such as DefectDojo or SBOM attestation
+8. Review ZAP baseline findings against the live app
+9. Add another security layer such as DefectDojo or SBOM attestation
