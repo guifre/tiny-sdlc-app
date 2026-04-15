@@ -8,6 +8,7 @@ This is a deliberately small app for learning:
 - Docker Compose
 - Kubernetes manifests
 - CI security scans with Semgrep
+- GitHub-native security workflows for code, secrets, and Kubernetes manifests
 
 ## What it does
 
@@ -335,6 +336,7 @@ That is the foundation you need before adding:
 - GitHub Actions jobs that build images
 - Semgrep scans that run in pipelines
 - Gitleaks secret scanning
+- Checkov Kubernetes manifest scanning
 - Dependabot dependency and GitHub Actions updates
 - DefectDojo or other security platforms that collect and display results
 
@@ -365,6 +367,7 @@ Security workflows in this repo:
 
 - `.github/workflows/semgrep.yml`
 - `.github/workflows/gitleaks.yml`
+- `.github/workflows/checkov.yml`
 - `.github/dependabot.yml`
 
 What they do:
@@ -376,6 +379,12 @@ What they do:
 
 - `gitleaks.yml`
   scans the repository for committed secrets
+  uploads SARIF as an artifact
+  uploads findings to GitHub code scanning
+  does not fail the workflow by default
+
+- `checkov.yml`
+  scans the Kubernetes manifests in `k8s/`
   uploads SARIF as an artifact
   uploads findings to GitHub code scanning
   does not fail the workflow by default
@@ -392,6 +401,7 @@ Why keep it separate at first:
 Later, you can extend it with:
 
 - more specific Semgrep rule selection
+- tighter Checkov policy selection and suppressions
 - dependency vulnerability scanning beyond Dependabot
 - image push to a registry
 - deployment automation
@@ -402,4 +412,5 @@ Later, you can extend it with:
 2. Run the stack in Kubernetes
 3. Review findings in GitHub code scanning
 4. Tune Semgrep rules and scanner scope
-5. Add another security layer such as IaC scanning or DefectDojo
+5. Tune Checkov scope for the Kubernetes manifests
+6. Add another security layer such as dependency scanning or DefectDojo
