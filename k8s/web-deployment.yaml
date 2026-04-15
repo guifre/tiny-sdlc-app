@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tiny-sdlc-web
+  namespace: tiny-sdlc-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tiny-sdlc-web
+  template:
+    metadata:
+      labels:
+        app: tiny-sdlc-web
+    spec:
+      containers:
+        - name: web
+          image: tiny-sdlc-app:dev
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 10

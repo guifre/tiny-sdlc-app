@@ -1,0 +1,10 @@
+resources:
+  - namespace.yaml
+  - postgres-secret.yaml
+  - postgres-pvc.yaml
+  - postgres-deployment.yaml
+  - postgres-service.yaml
+  - app-configmap.yaml
+  - app-secret.yaml
+  - web-deployment.yaml
+  - web-service.yaml

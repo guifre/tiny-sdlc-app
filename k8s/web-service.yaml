@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tiny-sdlc-web
+  namespace: tiny-sdlc-app
+spec:
+  selector:
+    app: tiny-sdlc-web
+  ports:
+    - port: 5000
+      targetPort: 5000
