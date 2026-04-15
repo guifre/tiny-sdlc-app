@@ -359,6 +359,21 @@ What it does:
 
 This is the GitHub equivalent of your first CI pipeline step.
 
+Add Semgrep CE with a second workflow:
+
+- `.github/workflows/semgrep.yml`
+
+What it does:
+
+- checks out the repository
+- runs `semgrep scan --config auto`
+- scans the Python app, Dockerfile, and Kubernetes YAML with Semgrep CE rules
+
+Why keep it separate at first:
+
+- it is easier to understand than mixing build and security checks together
+- you can learn the normal CI workflow and the security scan workflow independently
+
 Later, you can extend it with:
 
 - Semgrep scan job
