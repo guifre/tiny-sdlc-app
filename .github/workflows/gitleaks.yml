@@ -21,7 +21,7 @@ jobs:
 
       - name: Run Gitleaks
         id: gitleaks
-        uses: gacts/gitleaks@v1.3.1
+        uses: gacts/gitleaks@v1.3.2
         with:
           fail-on-error: false
 
