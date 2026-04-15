@@ -14,6 +14,7 @@ This is a deliberately small app for learning:
 - Basic ownership rules in `.github/CODEOWNERS`
 - SBOM generation with Syft for artifact and dependency graph visibility
 - DAST with OWASP ZAP baseline against the running app
+- A repo-level threat model in `docs/threat-model.md`
 
 ## What it does
 
@@ -380,6 +381,7 @@ Security workflows in this repo:
 - `.github/dependabot.yml`
 - `.github/CODEOWNERS`
 - `SECURITY.md`
+- `docs/threat-model.md`
 
 What they do:
 
@@ -428,6 +430,9 @@ What they do:
   explains how to report vulnerabilities
   clarifies that `main` is the only supported branch
   documents the repo scope for security reports
+
+- `docs/threat-model.md`
+  documents the main assets, trust boundaries, threats, and next security priorities
 
 Why keep it separate at first:
 
