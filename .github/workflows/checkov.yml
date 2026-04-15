@@ -22,7 +22,7 @@ jobs:
         id: checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: k8s
+          directory: .
           framework: kubernetes
           soft_fail: true
           output_format: cli,sarif
