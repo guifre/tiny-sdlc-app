@@ -67,6 +67,39 @@ Main trust boundaries:
 - repository code to third-party GitHub Actions and container images
 - local Kubernetes cluster to container images and secrets
 
+## Trust Boundaries Diagram
+
+```mermaid
+flowchart LR
+    subgraph Workstation["Developer Workstation Boundary"]
+        Dev["Developer"]
+        LocalRun["Local Docker / Kubernetes"]
+    end
+
+    subgraph GitHubBoundary["GitHub Boundary"]
+        Repo["GitHub Repository"]
+        Actions["GitHub Actions"]
+        Dependabot["Dependabot"]
+        Findings["Security Tab / Artifacts / Dependency Graph"]
+    end
+
+    subgraph Runtime["Application Runtime Boundary"]
+        User["HTTP Client"]
+        App["Flask App"]
+        DB["SQLite or Postgres"]
+    end
+
+    Dev --> Repo
+    Dev --> LocalRun
+    Repo --> Actions
+    Repo --> Dependabot
+    Actions --> Findings
+    Actions --> App
+    User --> App
+    App --> DB
+    LocalRun --> App
+```
+
 ## Entry Points
 
 Primary entry points:
