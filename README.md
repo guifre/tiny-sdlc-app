@@ -11,6 +11,7 @@ This is a deliberately small app for learning:
 - GitHub-native security workflows for code, secrets, and Kubernetes manifests
 - Dependency update and vulnerability scanning with Dependabot and OSV-Scanner
 - A basic repository security policy in `SECURITY.md`
+- Basic ownership rules in `.github/CODEOWNERS`
 
 ## What it does
 
@@ -373,6 +374,7 @@ Security workflows in this repo:
 - `.github/workflows/checkov.yml`
 - `.github/workflows/osv-scanner.yml`
 - `.github/dependabot.yml`
+- `.github/CODEOWNERS`
 - `SECURITY.md`
 
 What they do:
@@ -403,6 +405,10 @@ What they do:
 - `dependabot.yml`
   checks for Python dependency updates
   checks for GitHub Actions version updates
+
+- `CODEOWNERS`
+  defines default review ownership for the repository
+  marks workflows and Kubernetes manifests as explicitly owned paths
 
 - `SECURITY.md`
   explains how to report vulnerabilities

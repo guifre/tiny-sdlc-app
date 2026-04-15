@@ -1,0 +1,14 @@
+# Default owner for the whole repository
+* @guifre
+
+# CI and security workflow ownership
+.github/ @guifre
+
+# Kubernetes manifests
+/k8s/ @guifre
+
+# Application and container files
+/app.py @guifre
+/Dockerfile @guifre
+/docker-compose.yml @guifre
+/requirements.txt @guifre
