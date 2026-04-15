@@ -377,6 +377,7 @@ Why keep it separate at first:
 Later, you can extend it with:
 
 - Semgrep scan job
+- Gitleaks secret scan job
 - artifact upload
 - image push to a registry
 - deployment automation
