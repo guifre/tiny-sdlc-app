@@ -1,0 +1,76 @@
+stages:
+  - validate
+  - build
+  - security
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH'
+
+default:
+  interruptible: true
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_HOST: "tcp://docker:2376"
+  DOCKER_TLS_VERIFY: "1"
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  GIT_DEPTH: "0"
+
+cache:
+  paths:
+    - .cache/pip
+
+validate:
+  stage: validate
+  image: python:3.12-slim
+  script:
+    - pip install -r requirements.txt
+    - python -m py_compile app.py
+
+docker-build:
+  stage: build
+  image: docker:27.5.1
+  services:
+    - docker:27.5.1-dind
+  script:
+    - docker build -t tiny-sdlc-app:ci .
+
+semgrep:
+  stage: security
+  image: semgrep/semgrep:latest
+  allow_failure: true
+  script:
+    - semgrep scan --config auto --sarif --output semgrep.sarif
+  artifacts:
+    when: always
+    paths:
+      - semgrep.sarif
+
+gitleaks:
+  stage: security
+  image:
+    name: zricethezav/gitleaks:8.24.2
+    entrypoint: [""]
+  allow_failure: true
+  script:
+    - gitleaks detect --source . --report-format sarif --report-path gitleaks.sarif --exit-code 0
+  artifacts:
+    when: always
+    paths:
+      - gitleaks.sarif
+
+checkov:
+  stage: security
+  image:
+    name: bridgecrew/checkov:3.2.521
+    entrypoint: [""]
+  allow_failure: true
+  script:
+    - checkov --directory . --framework kubernetes --soft-fail --output cli --output sarif --output-file-path console,checkov.sarif
+  artifacts:
+    when: always
+    paths:
+      - checkov.sarif

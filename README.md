@@ -360,6 +360,7 @@ Why:
 The main CI workflow file lives here:
 
 - `.github/workflows/ci.yml`
+- `.gitlab-ci.yml`
 
 What it does:
 
@@ -367,6 +368,20 @@ What it does:
 - installs Python dependencies
 - verifies `app.py` syntax
 - builds the Docker image in CI
+
+The first GitLab pipeline in this repo mirrors the same core learning flow with custom jobs for:
+
+- validation
+- Docker image build
+- Semgrep
+- Gitleaks
+- Checkov
+
+Why a custom GitLab pipeline first:
+
+- it helps you learn GitLab CI syntax directly
+- it keeps the tool behavior close to the GitHub version you already understand
+- it avoids depending on GitLab-specific paid security features too early
 
 This is the GitHub equivalent of your first CI pipeline step.
 
