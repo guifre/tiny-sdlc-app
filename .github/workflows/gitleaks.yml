@@ -27,7 +27,7 @@ jobs:
 
       - name: Upload Gitleaks SARIF artifact
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: gitleaks-sarif
           path: ${{ steps.gitleaks.outputs.sarif }}
