@@ -2,12 +2,13 @@
 
 ## Scope
 
-This threat model covers the tiny app and the GitHub-based security pipeline around it:
+This threat model covers the starter-kit repository, the Python Flask example, and the CI security pipeline definitions around it:
 
-- Flask app in `app.py`
+- Flask app in `examples/python-flask/app.py`
 - local Docker and Docker Compose execution
-- Kubernetes manifests in `k8s/`
+- Kubernetes manifests in `examples/python-flask/k8s/`
 - GitHub Actions workflows for CI, SAST, secrets, IaC, SCA, SBOM, and DAST
+- GitLab CI definitions for validate, build, and core security scans
 
 Out of scope:
 
@@ -50,7 +51,8 @@ Important assets in this repo:
 
 - application source code
 - GitHub Actions workflow definitions
-- dependency definitions in `requirements.txt`
+- GitLab CI pipeline definition
+- dependency definitions in `examples/python-flask/requirements.txt`
 - SBOM artifact and dependency graph data
 - SARIF-based findings in GitHub code scanning
 - Kubernetes secrets and database connection settings
@@ -139,6 +141,7 @@ Controls already present in the repo:
 - SBOM generation and dependency snapshot submission
 - ZAP baseline DAST
 - Dependabot updates
+- GitLab CI baseline jobs for validate, build, and core scans
 - `SECURITY.md`
 - `.github/CODEOWNERS`
 

@@ -1,134 +1,111 @@
-# Tiny SDLC App
+# Secure SDLC Starter Kit
 
-This is a deliberately small app for learning:
+This repository is a small starter kit for learning and reusing secure delivery building blocks.
 
-- app code
-- database basics
-- Docker image builds
-- Docker Compose
+It combines:
+
+- a tiny runnable example app
+- Docker and Docker Compose
 - Kubernetes manifests
-- CI security scans with Semgrep
-- GitHub-native security workflows for code, secrets, and Kubernetes manifests
-- Dependency update and vulnerability scanning with Dependabot and OSV-Scanner
-- A basic repository security policy in `SECURITY.md`
-- Basic ownership rules in `.github/CODEOWNERS`
-- SBOM generation with Syft for artifact and dependency graph visibility
-- DAST with OWASP ZAP baseline against the running app
-- A repo-level threat model in `docs/threat-model.md`
+- GitHub Actions security workflows
+- a baseline GitLab CI pipeline
+- threat modeling and repository security policy docs
 
-## What it does
+The current reference app lives in `examples/python-flask/`, but the repository is intentionally structured so you can adapt it to a different app later.
 
-- `GET /` shows a tiny web page
-- `POST /notes` adds a note
-- `GET /api/notes` returns notes as JSON
-- `GET /healthz` returns a health check
+## What This Repo Gives You
 
-By default it uses SQLite, which keeps the first run simple.
-Later we can set `DATABASE_URL` and move it to Postgres without changing app code.
+- a concrete Python Flask example you can run locally, containerize, and deploy
+- starter CI patterns for validation, SAST, secret scanning, IaC scanning, SCA, SBOM, and DAST
+- GitHub-native code scanning integration for SARIF-capable tools
+- a matching GitLab CI baseline for validate, build, Semgrep, Gitleaks, and Checkov
+- documentation you can keep when generalizing the repository for your own projects
 
-## Run locally
+## Repository Map
+
+| Path | Purpose |
+| --- | --- |
+| `examples/python-flask/` | runnable reference app, Docker assets, and Kubernetes manifests |
+| `.github/workflows/` | GitHub Actions entrypoints |
+| `.gitlab-ci.yml` | GitLab CI entrypoint |
+| `ci/scripts/` | shared shell scripts reused by GitHub and GitLab jobs |
+| `ci/github/` | GitHub workflow overview |
+| `ci/gitlab/` | GitLab pipeline overview |
+| `docs/threat-model.md` | repo and pipeline threat model |
+| `SECURITY.md` | repository security reporting policy |
+
+## How To Use It
+
+You can use this repository in two ways:
+
+1. learn by running the existing example app and security workflows
+2. adapt the structure for another app while keeping the same CI and security building blocks
+
+Suggested order:
+
+1. run the example locally
+2. run it with Docker Compose
+3. deploy it to local Kubernetes
+4. inspect the GitHub and GitLab CI layouts
+5. replace the example app once the repo structure makes sense
+
+## Run The Current Example
+
+### Local Python
 
 ```bash
-cd /Users/guifruiz/Documents/docker-kubernetes/tiny-sdlc-app
+cd examples/python-flask
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python app.py
 ```
 
-Then open `http://localhost:5000`.
+Open `http://localhost:5000`.
 
-## Run with Docker Compose
-
-Install Docker Desktop first. Then from this directory run:
+### Docker Compose
 
 ```bash
-cd /Users/guifruiz/Documents/docker-kubernetes/tiny-sdlc-app
+cd examples/python-flask
 docker compose up --build
 ```
 
-Then open:
-
-- `http://localhost:5000`
-- `http://localhost:5000/healthz`
-- `http://localhost:5000/api/notes`
-
-This starts:
-
-- `web`: the Flask app in a Python container
-- `db`: PostgreSQL 16
-
-The app container waits for the database and then creates the `notes` table on startup.
-
-## What To Learn While Running It
-
-1. Inspect running containers with `docker ps`
-2. Read logs with `docker compose logs -f`
-3. Enter the app container with `docker compose exec web sh`
-4. Enter Postgres with `docker compose exec db psql -U appuser -d appdb`
-5. Stop the stack with `docker compose down`
-6. Remove the database volume with `docker compose down -v`
-
-## Files Added For Containerization
-
-- `Dockerfile`: builds the app image
-- `start.sh`: waits for database setup, then starts Gunicorn
-- `docker-compose.yml`: runs the app and Postgres together
-- `.dockerignore`: keeps local clutter out of the image
-
-## Run with Kubernetes
-
-This repo includes plain manifests in `k8s/` so you can learn the basics before using Helm.
-
-Why this stage matters for the original goal:
-
-- today, you are running one app and one database
-- later, the same Kubernetes ideas apply to CI runners, Semgrep jobs, and security tooling
-- this stage is about learning how Kubernetes keeps workloads alive, exposes them, scales them, updates them, and helps you debug them
-
-Build the app image first:
+Useful commands:
 
 ```bash
-cd /Users/guifruiz/Documents/docker-kubernetes/tiny-sdlc-app
-docker build -t tiny-sdlc-app:dev .
+docker compose logs -f
+docker compose exec web sh
+docker compose exec db psql -U appuser -d appdb
+docker compose down
+docker compose down -v
 ```
 
-Make sure your local Kubernetes cluster is running first:
+### Local Kubernetes
+
+Build the image:
+
+```bash
+docker build -t tiny-sdlc-app:dev examples/python-flask
+```
+
+Check the cluster:
 
 ```bash
 kubectl cluster-info
 ```
 
-If your Kubernetes cluster cannot see local images, push the image to your registry and update `k8s/web-deployment.yaml`.
-
-Apply the manifests:
+Deploy the example:
 
 ```bash
-kubectl apply -k k8s
+kubectl apply -k examples/python-flask/k8s
 kubectl get all -n tiny-sdlc-app
 kubectl get pvc -n tiny-sdlc-app
-```
-
-Check rollout status:
-
-```bash
 kubectl rollout status deployment/postgres -n tiny-sdlc-app
 kubectl rollout status deployment/tiny-sdlc-web -n tiny-sdlc-app
-```
-
-Access the app locally:
-
-```bash
 kubectl port-forward svc/tiny-sdlc-web 5000:5000 -n tiny-sdlc-app
 ```
 
-Then open:
-
-- `http://localhost:5000`
-- `http://localhost:5000/healthz`
-- `http://localhost:5000/api/notes`
-
-Useful debugging commands:
+Useful debug commands:
 
 ```bash
 kubectl get pods -n tiny-sdlc-app
@@ -136,343 +113,56 @@ kubectl logs deployment/tiny-sdlc-web -n tiny-sdlc-app
 kubectl logs deployment/postgres -n tiny-sdlc-app
 kubectl exec -it deployment/tiny-sdlc-web -n tiny-sdlc-app -- sh
 kubectl exec -it deployment/postgres -n tiny-sdlc-app -- psql -U appuser -d appdb
-kubectl delete -k k8s
-```
-
-What these manifests teach:
-
-- `Namespace`: logical isolation
-- `Secret`: database credentials and connection string
-- `ConfigMap`: non-secret app settings
-- `Deployment`: desired state for app and database pods
-- `Service`: stable DNS name inside the cluster
-- `PersistentVolumeClaim`: database storage
-
-## Stage 2 Tutorial: Deploy, Expose, Scale, Update, Debug
-
-This section is the hands-on Kubernetes stage for this project.
-
-Your mental model:
-
-- Docker built the image
-- Kubernetes runs that image as a pod
-- a `Deployment` keeps the pod alive
-- a `Service` gives the app a stable network name
-- `kubectl` is the main command-line tool for talking to the cluster
-
-### 1. Deploy
-
-Build the app image so the cluster has something to run:
-
-```bash
-docker build -t tiny-sdlc-app:dev .
-```
-
-Why:
-
-- this turns your app source code into a runnable container image
-- your web deployment is configured to use `tiny-sdlc-app:dev`
-
-Apply all Kubernetes manifests:
-
-```bash
-kubectl apply -k k8s
-```
-
-Why:
-
-- `apply` means create or update resources
-- `-k k8s` means load everything from the `k8s/kustomization.yaml` bundle
-- this creates the namespace, config, secrets, database, web app, services, and storage
-
-Check what got created:
-
-```bash
-kubectl get all -n tiny-sdlc-app
-kubectl get pvc -n tiny-sdlc-app
-```
-
-Why:
-
-- `get all` gives you the main app resources: pods, services, deployments, replicasets
-- `get pvc` confirms the database storage claim exists
-
-Wait until Kubernetes says the app is healthy:
-
-```bash
-kubectl rollout status deployment/postgres -n tiny-sdlc-app
-kubectl rollout status deployment/tiny-sdlc-web -n tiny-sdlc-app
-```
-
-Why:
-
-- Kubernetes may need time to pull images, create pods, and pass health checks
-- Postgres needs to be ready before the app can talk to the database
-
-### 2. Expose
-
-Expose the app to your laptop:
-
-```bash
-kubectl port-forward svc/tiny-sdlc-web 5000:5000 -n tiny-sdlc-app
-```
-
-Why:
-
-- the app is running inside the cluster, not directly on your laptop
-- `port-forward` creates a temporary tunnel from your machine to the Kubernetes `Service`
-- after this, `http://localhost:5000` reaches the app in the cluster
-
-Check the endpoints:
-
-```bash
-curl http://127.0.0.1:5000/healthz
-curl http://127.0.0.1:5000/api/notes
-```
-
-Why:
-
-- `/healthz` confirms the app and database are reachable
-- `/api/notes` confirms the app is serving requests inside Kubernetes
-
-### 3. Scale
-
-Increase the number of web app replicas:
-
-```bash
 kubectl scale deployment/tiny-sdlc-web --replicas=2 -n tiny-sdlc-app
-kubectl get pods -n tiny-sdlc-app -l app=tiny-sdlc-web
-```
-
-Why:
-
-- this is one of Kubernetes' core jobs: keep multiple copies of your app running
-- the `Service` load-balances traffic across matching pods
-- this is the same pattern used later for scalable internal platforms and CI workers
-
-Scale back down:
-
-```bash
-kubectl scale deployment/tiny-sdlc-web --replicas=1 -n tiny-sdlc-app
-```
-
-### 4. Update
-
-You have two common ways to update in this tutorial:
-
-1. Rebuild a local image and restart the deployment
-2. Point the deployment at a different tag
-
-Rebuild and restart:
-
-```bash
-docker build -t tiny-sdlc-app:dev .
 kubectl rollout restart deployment/tiny-sdlc-web -n tiny-sdlc-app
-kubectl rollout status deployment/tiny-sdlc-web -n tiny-sdlc-app
+kubectl delete -k examples/python-flask/k8s
 ```
 
-Why:
+## CI And Security Automation
 
-- rebuilding updates the image contents
-- restarting the deployment makes Kubernetes replace old pods with new ones
+### GitHub
 
-Or update the image tag directly:
+GitHub is the more complete integration in this repository today. It includes:
 
-```bash
-kubectl set image deployment/tiny-sdlc-web web=tiny-sdlc-app:dev -n tiny-sdlc-app
-kubectl rollout status deployment/tiny-sdlc-web -n tiny-sdlc-app
-```
+- CI validation and Docker build
+- Semgrep with SARIF upload to the Security tab
+- Gitleaks with SARIF upload to the Security tab
+- Checkov with SARIF upload to the Security tab
+- OSV-Scanner
+- SBOM generation and dependency snapshot submission
+- ZAP baseline as a non-blocking artifact-driven DAST check
+- Dependabot for Python dependencies and GitHub Actions
 
-Why:
+See:
 
-- this is closer to how CI/CD works later
-- in a real pipeline, GitHub Actions would build a new image tag and Kubernetes would roll out that tag
+- `ci/README.md`
+- `ci/github/README.md`
 
-### 5. Debug
+### GitLab
 
-When something breaks, start with these:
+GitLab currently mirrors the baseline flow:
 
-```bash
-kubectl get pods -n tiny-sdlc-app
-kubectl describe pod -n tiny-sdlc-app -l app=tiny-sdlc-web
-kubectl logs deployment/tiny-sdlc-web -n tiny-sdlc-app
-kubectl logs deployment/postgres -n tiny-sdlc-app
-kubectl exec -it deployment/tiny-sdlc-web -n tiny-sdlc-app -- sh
-kubectl exec -it deployment/postgres -n tiny-sdlc-app -- psql -U appuser -d appdb
-```
-
-What each one helps with:
-
-- `get pods`: quick status like `Running`, `Pending`, `CrashLoopBackOff`, `ImagePullBackOff`
-- `describe pod`: detailed events such as image pull failures, probe failures, scheduling issues
-- `logs`: app or database output
-- `exec`: open a shell inside the running container
-
-Examples of real problems from this project:
-
-- `ImagePullBackOff`: Kubernetes could not find or pull the image
-- rollout timeout: the pod started but did not become ready in time
-- `port-forward` failure: the service had no healthy backing pod yet
-
-### 6. Clean Up
-
-Delete everything when you want a fresh start:
-
-```bash
-kubectl delete -k k8s
-```
-
-Why:
-
-- this removes the namespace resources for this lab
-- it is the Kubernetes equivalent of tearing down your Compose stack
-
-### 7. What You Should Learn From This Stage
-
-By the end of this stage, you should be comfortable with:
-
-- deploying an app to a local cluster
-- exposing it to your laptop
-- scaling replicas up and down
-- updating the running version
-- using logs, describe, and exec to debug problems
-
-That is the foundation you need before adding:
-
-- GitHub Actions jobs that build images
-- Semgrep scans that run in pipelines
-- Gitleaks secret scanning
-- Checkov Kubernetes manifest scanning
-- Dependabot dependency and GitHub Actions updates
-- OSV-Scanner dependency vulnerability scanning
-- DefectDojo or other security platforms that collect and display results
-
-## Stage 3 Preview: GitHub Actions
-
-For the next stage, this project uses GitHub Actions instead of GitLab CI.
-
-Why:
-
-- it is simpler for a personal learning repo
-- it keeps the focus on CI concepts instead of GitLab administration
-- it still teaches the same core flow: code change -> automated checks -> image build -> later security scan
-
-The main CI workflow file lives here:
-
-- `.github/workflows/ci.yml`
-- `.gitlab-ci.yml`
-
-What it does:
-
-- checks out the repository
-- installs Python dependencies
-- verifies `app.py` syntax
-- builds the Docker image in CI
-
-The first GitLab pipeline in this repo mirrors the same core learning flow with custom jobs for:
-
-- validation
-- Docker image build
+- validate
+- build
 - Semgrep
 - Gitleaks
 - Checkov
 
-Why a custom GitLab pipeline first:
+It is useful when you want equivalent pipeline structure in a GitLab-hosted project, even if the richer security surfacing in this repository stays GitHub-native.
 
-- it helps you learn GitLab CI syntax directly
-- it keeps the tool behavior close to the GitHub version you already understand
-- it avoids depending on GitLab-specific paid security features too early
-- pushes to the GitLab `main` branch should trigger the custom pipeline once runners are available
+See:
 
-This is the GitHub equivalent of your first CI pipeline step.
+- `ci/gitlab/README.md`
+- `.gitlab-ci.yml`
 
-Security workflows in this repo:
+## Security Notes
 
-- `.github/workflows/semgrep.yml`
-- `.github/workflows/gitleaks.yml`
-- `.github/workflows/checkov.yml`
-- `.github/workflows/osv-scanner.yml`
-- `.github/workflows/sbom.yml`
-- `.github/workflows/zap-baseline.yml`
-- `.github/dependabot.yml`
-- `.github/CODEOWNERS`
-- `SECURITY.md`
+- Some findings are intentionally left in place so the scanners have something to report.
+- This is a starter kit and learning repo, not a production service.
+- If you generalize it for real projects, tighten branch protection, action pinning, secrets handling, and environment-specific controls.
+
+## Related Docs
+
+- `examples/python-flask/README.md`
 - `docs/threat-model.md`
-
-What they do:
-
-- `semgrep.yml`
-  scans the Python app, Dockerfile, and Kubernetes YAML with Semgrep CE
-  uploads SARIF as an artifact
-  uploads findings to GitHub code scanning
-
-- `gitleaks.yml`
-  scans the repository for committed secrets
-  uploads SARIF as an artifact
-  uploads findings to GitHub code scanning
-  does not fail the workflow by default
-
-- `checkov.yml`
-  scans the Kubernetes manifests in `k8s/`
-  uploads SARIF as an artifact
-  uploads findings to GitHub code scanning
-  does not fail the workflow by default
-
-- `osv-scanner.yml`
-  scans the repository for dependency vulnerabilities
-  uploads SARIF to GitHub code scanning
-  runs on pushes to `main`, weekly on a schedule, and on demand
-  does not fail the workflow by default
-
-- `sbom.yml`
-  generates an SPDX JSON SBOM for the repository
-  uploads the SBOM as a workflow artifact
-  submits a dependency snapshot to GitHub's dependency graph
-
-- `zap-baseline.yml`
-  starts the app in GitHub Actions
-  runs an OWASP ZAP baseline scan against `http://127.0.0.1:5000`
-  uploads a DAST report artifact without failing the workflow by default
-
-- `dependabot.yml`
-  checks for Python dependency updates
-  checks for GitHub Actions version updates
-
-- `CODEOWNERS`
-  defines default review ownership for the repository
-  marks workflows and Kubernetes manifests as explicitly owned paths
-
 - `SECURITY.md`
-  explains how to report vulnerabilities
-  clarifies that `main` is the only supported branch
-  documents the repo scope for security reports
-
-- `docs/threat-model.md`
-  documents the main assets, trust boundaries, threats, and next security priorities
-
-Why keep it separate at first:
-
-- it is easier to understand than mixing build and security checks together
-- you can learn the normal CI workflow and the security scan workflow independently
-
-Later, you can extend it with:
-
-- more specific Semgrep rule selection
-- tighter Checkov policy selection and suppressions
-- OSV-Scanner tuning for dependency scope and policy
-- SBOM attestation or signed provenance
-- ZAP rules tuning or a later move to active scan for authorized targets
-- image push to a registry
-- deployment automation
-
-## Next steps
-
-1. Run the stack in Docker Compose
-2. Run the stack in Kubernetes
-3. Review findings in GitHub code scanning
-4. Tune Semgrep rules and scanner scope
-5. Tune Checkov scope for the Kubernetes manifests
-6. Review OSV-Scanner dependency findings
-7. Review SBOM output and dependency graph data
-8. Review ZAP baseline findings against the live app
-9. Add another security layer such as DefectDojo or SBOM attestation

@@ -12,6 +12,7 @@ default:
   interruptible: true
 
 variables:
+  EXAMPLE_DIR: "examples/python-flask"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   DOCKER_TLS_CERTDIR: "/certs"
   DOCKER_HOST: "tcp://docker:2376"
@@ -27,8 +28,7 @@ validate:
   stage: validate
   image: python:3.12-slim
   script:
-    - pip install -r requirements.txt
-    - python -m py_compile app.py
+    - sh ci/scripts/validate-python-example.sh
 
 docker-build:
   stage: build
@@ -36,14 +36,14 @@ docker-build:
   services:
     - docker:27.5.1-dind
   script:
-    - docker build -t tiny-sdlc-app:ci .
+    - IMAGE_TAG=tiny-sdlc-app:ci sh ci/scripts/build-python-example-image.sh
 
 semgrep:
   stage: security
   image: semgrep/semgrep:latest
   allow_failure: true
   script:
-    - semgrep scan --config auto --sarif --output semgrep.sarif
+    - OUTPUT_PATH="$CI_PROJECT_DIR/semgrep.sarif" sh ci/scripts/run-semgrep.sh
   artifacts:
     when: always
     paths:
@@ -56,7 +56,7 @@ gitleaks:
     entrypoint: [""]
   allow_failure: true
   script:
-    - gitleaks detect --source . --report-format sarif --report-path gitleaks.sarif --exit-code 0
+    - OUTPUT_PATH="$CI_PROJECT_DIR/gitleaks.sarif" sh ci/scripts/run-gitleaks.sh
   artifacts:
     when: always
     paths:
@@ -69,7 +69,7 @@ checkov:
     entrypoint: [""]
   allow_failure: true
   script:
-    - checkov --directory . --framework kubernetes --soft-fail --output cli --output sarif --output-file-path console,checkov.sarif
+    - OUTPUT_PATH="$CI_PROJECT_DIR/checkov.sarif" sh ci/scripts/run-checkov.sh
   artifacts:
     when: always
     paths:

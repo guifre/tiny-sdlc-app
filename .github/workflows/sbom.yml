@@ -22,9 +22,9 @@ jobs:
       - name: Generate SBOM and submit dependency snapshot
         uses: anchore/sbom-action@v0
         with:
-          path: ./
+          path: ./examples/python-flask
           format: spdx-json
-          artifact-name: tiny-sdlc-app.spdx.json
+          artifact-name: python-flask-example.spdx.json
           dependency-snapshot: true
           upload-artifact: true
           upload-release-assets: false

@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+env:
+  EXAMPLE_DIR: examples/python-flask
+
 jobs:
   dast:
     runs-on: ubuntu-latest
@@ -25,11 +28,11 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r "${EXAMPLE_DIR}/requirements.txt"
 
       - name: Start application
         run: |
-          python app.py > app.log 2>&1 &
+          python "${EXAMPLE_DIR}/app.py" > app.log 2>&1 &
 
       - name: Wait for health endpoint
         run: |

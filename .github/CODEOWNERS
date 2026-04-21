@@ -1,14 +1,15 @@
 # Default owner for the whole repository
 * @guifre
 
-# CI and security workflow ownership
+# GitHub CI and automation
 .github/ @guifre
 
-# Kubernetes manifests
-/k8s/ @guifre
+# Shared CI scripts and docs
+/ci/ @guifre
+/.gitlab-ci.yml @guifre
 
-# Application and container files
-/app.py @guifre
-/Dockerfile @guifre
-/docker-compose.yml @guifre
-/requirements.txt @guifre
+# Example application
+/examples/python-flask/ @guifre
+
+# Supporting documentation
+/docs/ @guifre

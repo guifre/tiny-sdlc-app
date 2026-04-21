@@ -40,9 +40,10 @@ This repository is a personal learning project, not a production service.
 
 This policy covers:
 
-- application code
+- application code in `examples/`
 - GitHub Actions workflows
-- Docker and Docker Compose files
-- Kubernetes manifests in `k8s/`
+- GitLab CI definitions
+- Docker and Docker Compose files in examples
+- Kubernetes manifests in `examples/*/k8s/`
 
 It does not guarantee support for forks, old branches, or copied downstream uses.
