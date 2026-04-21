@@ -4,18 +4,16 @@ This repository keeps platform-specific entrypoints where GitHub and GitLab expe
 
 ## Scan Catalog
 
-- `validate`: install the example dependencies and verify Python syntax
-- `build`: build the example Docker image
-- `sast`: run Semgrep CE against the repository
-- `secret-scan`: run Gitleaks and emit SARIF
-- `iac-scan`: run Checkov against Kubernetes manifests in the repository
-- `sca`: run OSV-Scanner against repository dependency manifests
-- `sbom`: generate an SBOM and dependency snapshot
-- `dast`: run an OWASP ZAP baseline scan against the running example app
+See `ci/catalog.md` for the control-by-control view, including:
+
+- which controls exist on GitHub and GitLab
+- which jobs are blocking versus informational
+- which parts are shared versus platform-specific
 
 ## Layout
 
 - `ci/scripts/`: shared shell scripts used by both GitHub Actions and GitLab CI where practical
+- `ci/catalog.md`: behavior and ownership map for the current controls
 - `ci/github/README.md`: how the GitHub workflows are organized
 - `ci/gitlab/README.md`: how the GitLab pipeline is organized
 
@@ -27,3 +25,4 @@ If you adapt this starter kit:
 2. update `EXAMPLE_DIR` and image tags to match your app
 3. keep the shared shell scripts thin and repo-specific
 4. decide which scanners should be blocking versus informational
+5. use `docs/replace-the-example.md` before changing the default example path

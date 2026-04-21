@@ -13,6 +13,17 @@ It combines:
 
 The current reference app lives in `examples/python-flask/`, but the repository is intentionally structured so you can adapt it to a different app later.
 
+## Start Here
+
+If you want the fastest path to understanding the repo:
+
+1. read [docs/getting-started.md](docs/getting-started.md)
+2. run the Python Flask example once
+3. skim [ci/catalog.md](ci/catalog.md)
+4. read [docs/replace-the-example.md](docs/replace-the-example.md) before adapting it
+
+If you only want one first success, run the local Python path from [docs/getting-started.md](docs/getting-started.md).
+
 ## What This Repo Gives You
 
 - a concrete Python Flask example you can run locally, containerize, and deploy
@@ -48,6 +59,13 @@ Suggested order:
 3. deploy it to local Kubernetes
 4. inspect the GitHub and GitLab CI layouts
 5. replace the example app once the repo structure makes sense
+
+Helpful companion docs:
+
+- [Getting Started](docs/getting-started.md)
+- [Replace The Example](docs/replace-the-example.md)
+- [CI Catalog](ci/catalog.md)
+- [Cloud Readiness](docs/cloud-readiness.md)
 
 ## Run The Current Example
 
@@ -135,8 +153,9 @@ GitHub is the more complete integration in this repository today. It includes:
 
 See:
 
-- `ci/README.md`
-- `ci/github/README.md`
+- [CI Overview](ci/README.md)
+- [GitHub CI](ci/github/README.md)
+- [CI Catalog](ci/catalog.md)
 
 ### GitLab
 
@@ -152,17 +171,23 @@ It is useful when you want equivalent pipeline structure in a GitLab-hosted proj
 
 See:
 
-- `ci/gitlab/README.md`
+- [GitLab CI](ci/gitlab/README.md)
 - `.gitlab-ci.yml`
+- [CI Catalog](ci/catalog.md)
 
 ## Security Notes
 
 - Some findings are intentionally left in place so the scanners have something to report.
 - This is a starter kit and learning repo, not a production service.
 - If you generalize it for real projects, tighten branch protection, action pinning, secrets handling, and environment-specific controls.
+- If you want to evolve it toward real deployment, start with [docs/cloud-readiness.md](docs/cloud-readiness.md).
 
 ## Related Docs
 
-- `examples/python-flask/README.md`
-- `docs/threat-model.md`
-- `SECURITY.md`
+- [Python Flask Example](examples/python-flask/README.md)
+- [Threat Model](docs/threat-model.md)
+- [Security Policy](SECURITY.md)
+- [Getting Started](docs/getting-started.md)
+- [Replace The Example](docs/replace-the-example.md)
+- [Cloud Readiness](docs/cloud-readiness.md)
+- [CI Catalog](ci/catalog.md)

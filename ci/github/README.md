@@ -19,8 +19,23 @@ Workflows that operate on the example app use:
 - `EXAMPLE_DIR=examples/python-flask`
 - shared scripts from `ci/scripts/`
 
+## What Is GitHub-Specific
+
+- SARIF upload to GitHub code scanning
+- OSV-Scanner reusable workflow usage
+- dependency snapshot submission
+- GitHub Security tab surfacing
+
+## What You Would Change For A New Example
+
+- `EXAMPLE_DIR`
+- the dependency manifest path in `dependabot.yml`
+- the SBOM path
+- the DAST startup command if the runtime changes
+
 ## Notes
 
 - GitHub code scanning is used for SARIF-capable scanners.
 - ZAP stays artifact-based because this setup is a lightweight baseline scan.
 - OSV-Scanner and SBOM stay GitHub-native because they integrate well with GitHub security features.
+- See `ci/catalog.md` for blocking and output behavior.

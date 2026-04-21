@@ -154,6 +154,17 @@ The highest-priority risks for this repo today are:
 3. missing GitHub settings controls such as enforced branch protection
 4. runtime weaknesses that baseline DAST can see but the team might not review
 
+## Cloud Transition Gaps
+
+If this repository moves from local learning into a real cloud deployment, the biggest additional gaps are:
+
+- registry publishing and image provenance
+- cloud secret storage and rotation
+- environment-specific infrastructure ownership
+- DNS and TLS management
+- stronger runtime hardening for the example manifests
+- clearer separation between example defaults and deployable production values
+
 ## Recommended Next Steps
 
 1. enable branch protection and require key checks before merge
