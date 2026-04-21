@@ -382,6 +382,7 @@ Why a custom GitLab pipeline first:
 - it helps you learn GitLab CI syntax directly
 - it keeps the tool behavior close to the GitHub version you already understand
 - it avoids depending on GitLab-specific paid security features too early
+- pushes to the GitLab `main` branch should trigger the custom pipeline once runners are available
 
 This is the GitHub equivalent of your first CI pipeline step.
 
