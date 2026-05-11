@@ -28,7 +28,7 @@ jobs:
         run: sh ci/scripts/run-semgrep.sh
 
       - name: Upload Semgrep SARIF artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: semgrep-sarif
           path: semgrep.sarif
